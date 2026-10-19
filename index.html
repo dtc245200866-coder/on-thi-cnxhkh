@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>Ôn tập Chủ nghĩa xã hội khoa học</title>
+  <meta name="theme-color" content="#2563eb">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="Ôn tập CNXHKH">
+  <link rel="apple-touch-icon" href="apple-touch-icon.png">
+  <link rel="manifest" href="manifest.json">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header class="app-header">
+    <div class="header-inner">
+      <div class="brand">
+        <span class="brand-icon">✶</span>
+        <div>
+          <h1>Ôn tập CNXHKH</h1>
+          <p class="sub">Chủ nghĩa xã hội khoa học — trắc nghiệm · đúng/sai · kéo thả</p>
+        </div>
+      </div>
+      <nav class="tabs" id="mainTabs">
+        <button class="tab active" data-view="quiz">📝 Làm bài</button>
+        <button class="tab" data-view="manage">⚙️ Quản lý câu hỏi</button>
+      </nav>
+    </div>
+  </header>
+
+  <main class="app-main">
+    <!-- ============ VIEW: LÀM BÀI ============ -->
+    <section id="view-quiz" class="view active">
+      <!-- Màn hình chọn chủ đề -->
+      <div id="quiz-home" class="quiz-home">
+        <h2>Chọn phần ôn tập</h2>
+        <div id="topicList" class="topic-list"></div>
+        <div class="quiz-home-actions">
+          <label class="check-row">
+            <input type="checkbox" id="shuffleToggle"> Trộn thứ tự câu hỏi
+          </label>
+        </div>
+      </div>
+
+      <!-- Màn hình làm bài -->
+      <div id="quiz-run" class="quiz-run hidden">
+        <div class="quiz-top">
+          <button id="btnBackHome" class="btn ghost">← Chọn lại</button>
+          <div class="progress-text" id="progressText">Câu 1 / 10</div>
+        </div>
+        <div class="progress-bar"><div id="progressFill" class="progress-fill"></div></div>
+
+        <div id="questionCard" class="question-card"></div>
+
+        <div class="quiz-actions">
+          <button id="btnCheck" class="btn primary">Kiểm tra</button>
+          <button id="btnNext" class="btn secondary hidden">Câu tiếp theo →</button>
+        </div>
+        <div id="feedback" class="feedback"></div>
+      </div>
+
+      <!-- Màn hình kết quả -->
+      <div id="quiz-result" class="quiz-result hidden">
+        <h2>Kết quả</h2>
+        <div class="score-big" id="scoreBig">8/10</div>
+        <p id="scoreMsg" class="score-msg"></p>
+        <div id="wrongList" class="wrong-list"></div>
+        <div class="result-actions">
+          <button id="btnRetry" class="btn primary">Làm lại</button>
+          <button id="btnResultHome" class="btn secondary">Về trang chọn đề</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ VIEW: QUẢN LÝ CÂU HỎI ============ -->
+    <section id="view-manage" class="view">
+      <div class="manage-head">
+        <h2>Ngân hàng câu hỏi</h2>
+        <div class="manage-actions">
+          <button id="btnAdd" class="btn primary">＋ Thêm câu hỏi</button>
+          <button id="btnExport" class="btn secondary">Xuất JSON</button>
+          <button id="btnImport" class="btn secondary">Nhập JSON</button>
+          <button id="btnReset" class="btn danger">Đặt lại gốc</button>
+        </div>
+      </div>
+      <input type="file" id="importFile" accept=".json" class="hidden">
+      <p class="hint">Dữ liệu được lưu trong trình duyệt (localStorage). Dùng “Xuất JSON” để sao lưu, “Nhập JSON” để khôi phục.</p>
+      <div id="manageList" class="manage-list"></div>
+
+      <!-- Form thêm/sửa -->
+      <div id="editModal" class="modal hidden">
+        <div class="modal-box">
+          <h3 id="editTitle">Thêm câu hỏi</h3>
+          <form id="qForm">
+            <label>Chủ đề
+              <input type="text" id="fTopic" placeholder="VD: Chương 3: CNXH & Thời kỳ quá độ">
+            </label>
+            <label>Dạng câu hỏi
+              <select id="fType">
+                <option value="mcq">Trắc nghiệm 1 đáp án</option>
+                <option value="multi">Trắc nghiệm nhiều đáp án</option>
+                <option value="tf">Đúng / Sai (nhiều phát biểu)</option>
+                <option value="drag">Kéo thả (ghép cặp)</option>
+              </select>
+            </label>
+            <label>Nội dung câu hỏi
+              <textarea id="fQuestion" rows="2"></textarea>
+            </label>
+            <div id="fBody"></div>
+            <label>Giải thích
+              <textarea id="fExplain" rows="2"></textarea>
+            </label>
+            <div class="modal-actions">
+              <button type="button" id="btnCancelEdit" class="btn secondary">Hủy</button>
+              <button type="submit" class="btn primary">Lưu</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <div id="confirmModal" class="modal hidden">
+    <div class="modal-box modal-small">
+      <h3>Xác nhận</h3>
+      <p id="confirmMsg" style="margin:0 0 16px;">Bạn có chắc chắn?</p>
+      <div class="modal-actions">
+        <button type="button" id="confirmCancel" class="btn secondary">Hủy</button>
+        <button type="button" id="confirmOk" class="btn danger">Xóa</button>
+      </div>
+    </div>
+  </div>
+  <div id="toast" class="toast"></div>
+
+  <script src="questions.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
